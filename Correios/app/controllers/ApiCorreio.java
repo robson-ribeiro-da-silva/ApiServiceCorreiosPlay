@@ -1,6 +1,10 @@
 package controllers;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
+import models.PrecoPrazo;
 import play.libs.WS;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -22,7 +26,7 @@ public class ApiCorreio extends Controller{
 	}*/
 	
 	//http://localhost:9000/59900000/20,0/50,0/50,0/50,0/500.0
-	public static String consumeFrete(String cepDestino, String peso, String comprimento, String altura, String largura, double valorDeclarado) {
+	public static void consumeFrete(String cepDestino, String peso, String comprimento, String altura, String largura, double valorDeclarado) {
 		ApiCorreio.response.accessControl("*");
 		HttpResponse res = 
                 WS.url("http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx?nCdEmpresa=08082650&sDsSenha=564321"
@@ -39,10 +43,19 @@ public class ApiCorreio extends Controller{
 		
 		//System.out.println(valueValor+" : "+valuePrazo);
 		
-		String response =  "{\"prazo\":\""+valuePrazo+"\",\"preco\":\""+valueValor+"\"}";
+		//String response =  "{\"prazo\":\""+valuePrazo+"\",\"preco\":\""+valueValor+"\"}";
 		
-		return response;
-		}
+		//return response;
+		
+		PrecoPrazo precoprazo = new PrecoPrazo(valueValor, valuePrazo);
+		
+		Gson gson = new Gson();
+        
+        String json = gson.toJson(precoprazo);
+ 
+        renderText(json);		
+		
+	}
 	
 
 	public static String getTagValue(String xml, String tag) {
